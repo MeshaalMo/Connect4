@@ -5,13 +5,14 @@ var currentState = {
 }
 var PLAYER_COLOR = 'red'
 var AI_COLOR = 'yellow'
-
+window.onload = (e) =>{
+    ai(currentState)
+}
 function play(e) {
     if (!isTerminal(currentState)) {
-        let col = e.id[1]
         updateBoard(e.id, PLAYER_COLOR, -1)
         if(!isTerminal(currentState))
-            alphaBetaSearch(currentState)
+            ai(currentState)
     }
 }
 
@@ -28,87 +29,112 @@ function updateBoard(move, color, val) {
             currentState.actions[col] = (Number(currentState.actions[col][0]) + 1) + '' + col
             if(Number(currentState.actions[col][0]) < currentState.board.length)
                 return
-            else{
-                console.log('Set '+col+' to null')
-                currentState.actions[col] = null
-                return
-            }
+            console.log('Set '+col+' to null')
+            currentState.actions[col] = null
         }
     }
 }
 
-function alphaBetaSearch(state) {
-    t = maxValue(state, -11, 11, 0)
+function ai(state){
+    updateBoard(naive_ai(state)[1],AI_COLOR,1)
+}
+
+function naive_ai(state){
+    let t = [0,null]
+    for(let i = 0 ; i < state.actions.length; i++){
+        let a = state.actions[i]
+        if(a){
+            opNewState = copy(state)
+            opNewState.board[a[0]][a[1]] = -1
+            opGameState = gameUtility(opNewState.board)
+            aiNewState = copy(state)
+            aiNewState.board[a[0]][a[1]] = 1
+            aiGameState = gameUtility(aiNewState.board)
+            if(aiGameState)
+                return [1,a]
+            if(opGameState)
+                t = [1,a]
+        }
+    }
     while(!t[1])
-        t = [0,state.actions[Math.round(Math.random*state.actions.length)]]
-    updateBoard(t[1], AI_COLOR, 1)
-    console.log(currentState)
+        t = [0,state.actions[Math.round(Math.random()*state.actions.length)]]
     return t
 }
 
-function maxValue(state, alpha, beta, depth) {
-    if (isTerminal(state))
-        return [gameUtility(state), null]
-    if(depth >= 6)
-        return[0, null]
-    let v = -11
-    let move = null
-    console.log(state.actions)
-    state.actions.every(a => {
-        if(a){
-            newState = copy(state)
-            console.log(newState)
-            newState.board[a[0]][a[1]] = 1
-            if (Number(a[0]) + 1 < newState.board.length)
-                newState.actions[a[1]] = (Number(currentState.actions[a[1]][0]) + 1) + '' + a[1]
-            else
-                newState.actions[a[1]] = null
-            let t = minValue(newState, alpha, beta, depth + 1)
-            let v2 = t[0]
-            if (v2 > v) {
-                v = v2
-                move = a
-                alpha = Math.max(alpha, v)
-            }
-            if (v >= beta) {
-                return false
-            }
-            return true
-        }
-    })
-    return [v, move]
-}
+// function alphaBetaSearch(state) {
+//     t = maxValue(state, -11, 11, 0)
+//     console.log(t)
+//     while(!t[1])
+//         t = [0,state.actions[Math.round(Math.random*state.actions.length)]]
+//     updateBoard(t[1], AI_COLOR, 1)
+//     return t
+// }
 
-function minValue(state, alpha, beta, depth) {
-    if (isTerminal(state))
-        return [gameUtility(state), null]
-    if(depth >= 6)
-        return[0, null]
-    let v = 11
-    let move = null
-    state.actions.every(a => {
-        if(a){
-            newState = copy(state)
-            newState.board[a[0]][a[1]] = 1
-            if (Number(a[0]) + 1 < newState.board.length)
-                newState.actions[a[1]] = (Number(currentState.actions[a[1]][0]) + 1) + '' + a[1]
-            else
-                newState.actions[a[1]] = null
-            let t = maxValue(newState, alpha, beta, depth + 1)
-            let v2 = t[0]
-            if (v2 < v) {
-                v = v2
-                move = a
-                beta = Math.min(beta, v)
-            }
-            if (v <= alpha) {
-                return false
-            }
-            return true
-        }
-    })
-    return [v, move]
-}
+// function maxValue(state, alpha, beta, depth) {
+//     if (isTerminal(state))
+//         return [gameUtility(state), null]
+//     if(depth >= 6)
+//         return[0, null]
+//     let v = -11
+//     let move = null
+//     state.actions.every(a => {
+//         if(a){
+//             newState = copy(state)
+//             newState.board[a[0]][a[1]] = 1
+//             if (Number(a[0]) + 1 < newState.board.length)
+//                 newState.actions[a[1]] = (Number(currentState.actions[a[1]][0]) + 1) + '' + a[1]
+//             else
+//                 newState.actions[a[1]] = null
+//             let t = minValue(newState, alpha, beta, depth + 1)
+//             let v2 = t[0]
+//             if(!v2)
+//                 return true
+//             if (v2 > v) {
+//                 v = v2
+//                 move = a
+//                 alpha = Math.max(alpha, v)
+//             }
+//             if (v >= beta) {
+//                 return false
+//             }
+//             return true
+//         }
+//     })
+//     return [v, move]
+// }
+
+// function minValue(state, alpha, beta, depth) {
+//     if (isTerminal(state))
+//         return [gameUtility(state), null]
+//     if(depth >= 6)
+//         return[0, null]
+//     let v = 11
+//     let move = null
+//     state.actions.every(a => {
+//         if(a){ 
+//             newState = copy(state)
+//             newState.board[a[0]][a[1]] = 1
+//             if (Number(a[0]) + 1 < newState.board.length)
+//                 newState.actions[a[1]] = (Number(currentState.actions[a[1]][0]) + 1) + '' + a[1]
+//             else
+//                 newState.actions[a[1]] = null
+//             let t = maxValue(newState, alpha, beta, depth + 1)
+//             let v2 = t[0]
+//             if(!v2)
+//                 return true
+//             if (v2 < v) {
+//                 v = v2
+//                 move = a
+//                 beta = Math.min(beta, v)
+//             }
+//             if (v <= alpha) {
+//                 return false
+//             }
+//             return true
+//         }
+//     })
+//     return [v, move]
+// }
 
 function gameUtility(board) {
     //Check columns
