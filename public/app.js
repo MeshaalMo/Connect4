@@ -3,6 +3,7 @@ var currentState = {
     [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]],
     actions: ['03', '02', '04', '00', '01', '05', '06']
 }
+var maxDepth = 6
 var PLAYER_COLOR = 'red'
 var AI_COLOR = 'yellow'
 
@@ -76,7 +77,7 @@ function alphaBetaSearch(state) {
 }
 
 function maxValue(state, alpha, beta, depth) {
-    if (isTerminal(state) || depth > 6)
+    if (isTerminal(state) || depth > maxDepth)
         return [gameUtility(state.board, depth), null]
     let v = -100
     let move = null
@@ -113,7 +114,7 @@ function maxValue(state, alpha, beta, depth) {
 }
 
 function minValue(state, alpha, beta, depth) {
-    if (isTerminal(state) || depth > 6)
+    if (isTerminal(state) || depth > maxDepth)
         return [gameUtility(state.board, depth), null]
 
     let v = 100
@@ -150,7 +151,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row + 1][col] &&
                     board[row + 2][col] == board[row + 3][col] &&
                     board[row][col] == board[row + 2][col])
-                    return board[row][col] * 10 - board[row][col] * depth
+                    return board[row][col] * 20 - board[row][col] * depth
         }
     }
     //Check rows
@@ -160,7 +161,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row][col + 1] &&
                     board[row][col + 2] == board[row][col + 3] &&
                     board[row][col] == board[row][col + 2])
-                    return board[row][col] * 10 - board[row][col] * depth
+                    return board[row][col] * 20 - board[row][col] * depth
 
         }
     }
@@ -171,7 +172,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row + 1][col + 1] &&
                     board[row + 2][col + 2] == board[row + 3][col + 3] &&
                     board[row][col] == board[row + 2][col + 2])
-                    return board[row][col] * 10 - board[row][col] * depth
+                    return board[row][col] * 20 - board[row][col] * depth
             }
         }
     }
@@ -182,7 +183,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row - 1][col + 1] &&
                     board[row - 2][col + 2] == board[row - 3][col + 3] &&
                     board[row][col] == board[row - 2][col + 2])
-                    return board[row][col] * 10 - board[row][col] * depth
+                    return board[row][col] * 20 - board[row][col] * depth
         }
     }
     return 0
