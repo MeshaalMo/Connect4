@@ -65,7 +65,7 @@ h1{
   }
   
   .dropdown {
-     animation: fade 0.5s linear forwards;
+     animation: fade 0.3s linear forwards;
      position: relative;
   }
 

@@ -10,11 +10,8 @@ function play(e) {
     if (!isTerminal(currentState)) 
         updateBoard(e.id, PLAYER_COLOR, -1)
     if (!isTerminal(currentState))
-        alphaBetaSearch(currentState)
-    if(gameUtility(currentState.board,0) < 0)
-        document.querySelector('h1').innerHTML = 'Congrats 🎈 '
-    if(gameUtility(currentState.board,0) > 0)
-        document.querySelector('h1').innerHTML = 'AI is Super Smart 😎🖥'
+        setTimeout(alphaBetaSearch,350,currentState)
+
 }
 
 function updateBoard(move, color, val) {
@@ -22,14 +19,14 @@ function updateBoard(move, color, val) {
     for (let i = 0; i < currentState.board.length; i++) {
         if (!currentState.board[i][col]) {
             div = document.createElement('div')
-            div.style.top = (5 - i) * -100 + '%'
+            div.style.top = (6 - i) * -100 + '%'
             document.getElementById(i + col).appendChild(div)
             div.style.backgroundColor = color
             div.classList.add('dropdown')
             currentState.board[i][col] = val
             if ((i + 1) < currentState.board.length) {
                 currentState.actions[currentState.actions.findIndex(e => e == i+col)] = (i + 1) + '' + col
-                return
+                break
             }
             console.log('Set ' + col + ' to null')
             currentState.actions[currentState.actions.findIndex(e => e == i+col)] = null
@@ -38,6 +35,12 @@ function updateBoard(move, color, val) {
 
         }
     }
+    if(gameUtility(currentState.board,0) < 0)
+    document.querySelector('h1').innerHTML = 'Congrats 👑🏆 '
+    if(gameUtility(currentState.board,0) > 0)
+        document.querySelector('h1').innerHTML = 'AI is Super Smart 🥊'
+    if(isTerminal(currentState) && !gameUtility(currentState.board,0))
+        document.querySelector('h1').innerHTML = 'Draw 🤷‍♀️'
 }
 
 function ai(move) {
@@ -147,7 +150,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row + 1][col] &&
                     board[row + 2][col] == board[row + 3][col] &&
                     board[row][col] == board[row + 2][col])
-                    return board[row][col] * 10 - depth
+                    return board[row][col] * 10 - board[row][col] * depth
         }
     }
     //Check rows
@@ -157,7 +160,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row][col + 1] &&
                     board[row][col + 2] == board[row][col + 3] &&
                     board[row][col] == board[row][col + 2])
-                    return board[row][col] * 10 - depth
+                    return board[row][col] * 10 - board[row][col] * depth
 
         }
     }
@@ -168,7 +171,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row + 1][col + 1] &&
                     board[row + 2][col + 2] == board[row + 3][col + 3] &&
                     board[row][col] == board[row + 2][col + 2])
-                    return board[row][col] * 10 - depth
+                    return board[row][col] * 10 - board[row][col] * depth
             }
         }
     }
@@ -179,7 +182,7 @@ function gameUtility(board, depth) {
                 if (board[row][col] == board[row - 1][col + 1] &&
                     board[row - 2][col + 2] == board[row - 3][col + 3] &&
                     board[row][col] == board[row - 2][col + 2])
-                    return board[row][col] * 10 - depth
+                    return board[row][col] * 10 - board[row][col] * depth
         }
     }
     return 0
