@@ -3,7 +3,7 @@ var currentState = {
     [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]],
     actions: ['03', '02', '04', '00', '01', '05', '06']
 }
-var maxDepth = 6
+var maxDepth = 10
 var PLAYER_COLOR = 'red'
 var AI_COLOR = 'yellow'
 
@@ -12,7 +12,6 @@ function play(e) {
         updateBoard(e.id, PLAYER_COLOR, -1)
     if (!isTerminal(currentState))
         setTimeout(alphaBetaSearch,350,currentState)
-
 }
 
 function updateBoard(move, color, val) {
@@ -29,11 +28,7 @@ function updateBoard(move, color, val) {
                 currentState.actions[currentState.actions.findIndex(e => e == i+col)] = (i + 1) + '' + col
                 break
             }
-            console.log('Set ' + col + ' to null')
             currentState.actions[currentState.actions.findIndex(e => e == i+col)] = null
-            console.log(currentState.actions)
-            console.log(i+col)
-
         }
     }
     if(gameUtility(currentState.board,0) < 0)
@@ -72,7 +67,6 @@ function alphaBetaSearch(state) {
     t = naive_ai(state)
     if(!t[1])
         t = maxValue(state, -100, 100, 0)
-    console.log(t)
     ai(t[1])
 }
 
@@ -95,15 +89,9 @@ function maxValue(state, alpha, beta, depth) {
                 v = v2
                 move = a
                 alpha = Math.max(alpha, v)
-                console.log('move set: '+move)
-                console.log(newState)
-                console.log(v)
-                console.log('depth: '+depth)
-                console.log('---------------------')
 
             }
             if (v >= beta) {
-                console.log('burn!!!!')
                 return false
 
             }
