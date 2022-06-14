@@ -1,7 +1,7 @@
 var currentState = {
     board: [[0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]],
-    actions: ['03', '02', '04', '00', '01', '05', '06']
+    actions: ['03', '02', '04', '01', '05', '00', '06']
 }
 var maxDepth = 10
 var PLAYER_COLOR = 'red'
@@ -32,7 +32,7 @@ function updateBoard(move, color, val) {
         }
     }
     if(gameUtility(currentState.board,0) < 0)
-    document.querySelector('h1').innerHTML = 'Congrats 👑🏆 '
+        document.querySelector('h1').innerHTML = 'Congrats 👑🏆 '
     if(gameUtility(currentState.board,0) > 0)
         document.querySelector('h1').innerHTML = 'AI is Super Smart 🥊'
     if(isTerminal(currentState) && !gameUtility(currentState.board,0))
@@ -75,14 +75,14 @@ function maxValue(state, alpha, beta, depth) {
         return [gameUtility(state.board, depth), null]
     let v = -100
     let move = null
-    state.actions.every(a => {
+    state.actions.every((a,i) => {
         if (a) {
             newState = copy(state)
             newState.board[a[0]][a[1]] = 1
             if (Number(a[0]) + 1 < newState.board.length)
-                newState.actions[newState.actions.findIndex(e => e == a)] = (Number(a[0]) + 1) + '' + a[1]
+                newState.actions[i] = (Number(a[0]) + 1) + '' + a[1]
             else
-                newState.actions[newState.actions.findIndex(e => e == a)] = null
+                newState.actions[i] = null
             let t = minValue(newState, alpha, beta, depth + 1)
             let v2 = t[0]
             if (v2 > v) {
@@ -91,10 +91,8 @@ function maxValue(state, alpha, beta, depth) {
                 alpha = Math.max(alpha, v)
 
             }
-            if (v >= beta) {
+            if (v >= beta) 
                 return false
-
-            }
         }
         return true
     })
@@ -107,14 +105,14 @@ function minValue(state, alpha, beta, depth) {
 
     let v = 100
     let move = null
-    state.actions.every(a => {
+    state.actions.every((a,i) => {
         if (a) {
             newState = copy(state)
             newState.board[a[0]][a[1]] = -1
             if (Number(a[0]) + 1 < newState.board.length)
-                newState.actions[newState.actions.findIndex(e => e == a)] = (Number(a[0]) + 1) + '' + a[1]
+                newState.actions[i] = (Number(a[0]) + 1) + '' + a[1]
             else
-                newState.actions[newState.actions.findIndex(e => e == a)] = null
+                newState.actions[i] = null
             let t = maxValue(newState, alpha, beta, depth + 1)
             let v2 = t[0]
             if (v2 < v) {
@@ -122,9 +120,8 @@ function minValue(state, alpha, beta, depth) {
                 move = a
                 beta = Math.min(beta, v)
             }
-            if (v <= alpha) {
+            if (v <= alpha)
                 return false
-            }
         }
         return true
     })
@@ -153,37 +150,32 @@ function gameUtility(board, depth) {
 
         }
     }
-    //Check upper right diagonal 
+    //Check diagonals 
     for (let row = 0; row < board.length - 3; row++) {
         for (let col = 0; col < board[row].length - 3; col++) {
+            //Check upper right diagonal 
             if (board[row][col]) {
                 if (board[row][col] == board[row + 1][col + 1] &&
                     board[row + 2][col + 2] == board[row + 3][col + 3] &&
                     board[row][col] == board[row + 2][col + 2])
                     return board[row][col] * 20 - board[row][col] * depth
+
+                //Check counter diagonal
+                let r = row + 3 
+                if (board[r][col] == board[r - 1][col + 1] &&
+                    board[r - 2][col + 2] == board[r - 3][col + 3] &&
+                    board[r][col] == board[r - 2][col + 2])
+                    return board[r][col] * 20 - board[r][col] * depth
             }
-        }
-    }
-    //Check counter diagonal 
-    for (let row = 3; row < board.length; row++) {
-        for (let col = 0; col < board[row].length - 3; col++) {
-            if (board[row][col])
-                if (board[row][col] == board[row - 1][col + 1] &&
-                    board[row - 2][col + 2] == board[row - 3][col + 3] &&
-                    board[row][col] == board[row - 2][col + 2])
-                    return board[row][col] * 20 - board[row][col] * depth
         }
     }
     return 0
 }
 
-function h(state) {
-
-}
-
 function isTerminal(state) {
-    for (let i = 0; i < state.actions.length; i++)
-        if (state.actions[i] && !gameUtility(state.board,0))
+    let utility = gameUtility(state.board,0)
+    for (let i = 0; i < state.actions.length && !utility; i++)
+        if (state.actions[i])
             return false
     return true
 }
